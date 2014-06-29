@@ -140,6 +140,45 @@ echo "end" >> ./$APPNAME/Gemfile
 
 
 
+# Set up RSpec in application
+rspecSetup()
+{
+if [[ $VERBOSE -eq 1 ]]; then echo "Installing RSpec into application."; fi
+./$APPNAME/rails g rspec:install
+
+if [[ $VERBOSE -eq 1 ]]; then echo "Fixing .rspec file."; fi
+cat << EOF > ./$APPNAME/.rspec
+--color -fd
+--require rails_helper
+EOF
+
+if [[ $VERBOSE -eq 1 ]]; then echo "Creating binstub for RSpec."; fi
+./$APPNAME/bundle binstubs rspec-core
+}
+
+
+
+# Set up Cucumber in application
+cucumberSetup()
+{
+}
+
+
+
+# Set up jasmine in application
+jasmineSetup()
+{
+}
+
+
+
+# Set up SimpleCov
+simplecovSetup()
+{
+}
+
+
+
 # Variables
 APPNAME=""
 VERBOSE=0
@@ -237,6 +276,37 @@ then
 fi
 bundle
 
+
+
+# Add RSpec setup
+if [[ $RSPEC -eq 1 ]]
+then
+  rspecSetup
+fi
+
+
+
+# Add Cucumber setup
+if [[ $CUCUMBER -eq 1 ]]
+then
+  cucumberSetup
+fi
+
+
+
+# Add jasmine setup
+if [[ $JASMINE -eq 1 ]]
+then
+  jasmineSetup
+fi
+
+
+
+# Add simplecov setup
+if [[ $RSPEC -eq 1 || $CUCUMBER -eq 1 ]]
+then
+  simplecovSetup
+fi
 
 
 # Exit
