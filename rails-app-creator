@@ -161,6 +161,34 @@ if [[ $VERBOSE -eq 1 ]]; then echo "Creating binstub for RSpec."; fi
 # Set up Cucumber in application
 cucumberSetup()
 {
+if [[ $VERBOSE -eq 1 ]]; then echo "Installing Cucumber into application."; fi
+./$APPNAME/rails g cucumber:install
+
+if [[ $VERBOSE -eq 1 ]]; then echo "Creating binstub for Cucumber."; fi
+./$APPNAME/bundle binstubs cucumber
+
+if [[ $RSPEC -eq 1 ]] 
+then
+if [[ $VERBOSE -eq 1 ]]; then echo "Making FactoryGirl factories accessible."; fi
+cat << EOF > ./$APPNAME/features/support/env.rb
+
+# Make FactoryGirl factories accessible to Cucumber scenarios
+Dir["../../spec/factories/*.rb"].each {|file| require_relative file }
+EOF
+fi
+
+if [[ $VERBOSE -eq 1 ]]; then echo "Configuring DatabaseCleaner."; fi
+cat << EOF > ./$APPNAME/features/support/database.rb
+
+# Hook for DatabaseCleaner
+Before do
+  DatabaseCleaner.start
+end
+
+After do
+  DatabaseCleaner.clean
+end
+EOF
 }
 
 
