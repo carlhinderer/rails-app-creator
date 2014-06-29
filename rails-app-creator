@@ -178,7 +178,7 @@ bundle binstubs cucumber
 if [[ $RSPEC -eq 1 ]] 
 then
 if [[ $VERBOSE -eq 1 ]]; then echo "Making FactoryGirl factories accessible."; fi
-cat << EOF > features/support/env.rb
+cat << EOF >> features/support/env.rb
 
 # Make FactoryGirl factories accessible to Cucumber scenarios
 Dir["../../spec/factories/*.rb"].each {|file| require_relative file }
