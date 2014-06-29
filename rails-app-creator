@@ -73,7 +73,35 @@ then
   exit -1
 fi
 
-
+# Create new rails application
+CREATECOMMAND="rails new $APPNAME"
+if [[ $RSPEC -eq 1 ]]
+then
+  # If using RSpec, omit Test::Unit directory
+  CREATECOMMAND="$CREATECOMMAND -T"
+fi
+$CREATECOMMAND
 
 # End
 exit 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
