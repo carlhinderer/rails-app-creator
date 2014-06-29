@@ -22,7 +22,7 @@ EOF
 addHamlGems()
 {
 if [[ $VERBOSE -eq 1 ]]; then echo "Adding Haml gems to Gemfile."; fi
-cat << EOF >> ./$APPNAME/Gemfile
+cat << EOF >> Gemfile
   
 # Use Haml for templating
 gem 'haml'
@@ -37,11 +37,11 @@ replaceErbLayout()
 {
 # Remove ERB layout file
 if [[ $VERBOSE -eq 1 ]]; then echo "Deleting ERB layout file."; fi
-rm ./$APPNAME/app/views/layouts/application.html.erb
+rm app/views/layouts/application.html.erb
 
 # Create Haml layout file
 if [[ $VERBOSE -eq 1 ]]; then echo "Creating Haml layout file."; fi
-cat << EOF >> ./$APPNAME/app/views/layouts/application.html.haml
+cat << EOF >> app/views/layouts/application.html.haml
 !!! 5
 
 %html
@@ -66,7 +66,7 @@ then echo "Adding testing gems to :development, :test group."
 fi
 
 # Begin Development/Test Group
-cat << EOF >> ./$APPNAME/Gemfile
+cat << EOF >> Gemfile
 
 # Testing Gems
 group :development, :test do
@@ -75,7 +75,7 @@ EOF
 # RSpec Development/Test Group
 if [[ $RSPEC -eq 1 ]]
 then
-cat << EOF >> ./$APPNAME/Gemfile
+cat << EOF >> Gemfile
   gem 'rspec-rails'
   gem 'factory_girl_rails'
   gem 'faker'
@@ -85,7 +85,7 @@ fi
 # Jasmine Development/Test Group
 if [[ $JASMINE -eq 1 ]] 
 then
-cat << EOF >> ./$APPNAME/Gemfile
+cat << EOF >> Gemfile
   gem 'jasmine-rails'
   gem 'jasmine-jquery-rails'
   gem 'guard-jasmine'
@@ -93,7 +93,7 @@ EOF
 fi
 
 # End Development/Test Group
-echo "end" >> ./$APPNAME/Gemfile
+echo "end" >> Gemfile
 }
 
 
@@ -106,7 +106,7 @@ then echo "Adding testing gems to :test group."
 fi
 
 # Begin Test Group
-cat << EOF >> ./$APPNAME/Gemfile
+cat << EOF >> Gemfile
 
 # Testing Gems
 group :test do
@@ -115,7 +115,7 @@ EOF
 # RSpec Test Group
 if [[ $RSPEC -eq 1 ]]
 then
-cat << EOF >> ./$APPNAME/Gemfile
+cat << EOF >> Gemfile
   gem 'shoulda-matchers'
   gem 'guard-rspec', :require => false
   gem 'simplecov', :require => false
@@ -125,7 +125,7 @@ fi
 # Cucumber Test Group
 if [[ $CUCUMBER -eq 1 ]] 
 then
-cat << EOF >> ./$APPNAME/Gemfile
+cat << EOF >> Gemfile
   gem 'cucumber-rails', require: false
   gem 'selenium-webdriver'
   gem 'database_cleaner'
@@ -135,7 +135,7 @@ EOF
 fi
 
 # End Test Group
-echo "end" >> ./$APPNAME/Gemfile
+echo "end" >> Gemfile
 }
 
 
@@ -144,16 +144,22 @@ echo "end" >> ./$APPNAME/Gemfile
 rspecSetup()
 {
 if [[ $VERBOSE -eq 1 ]]; then echo "Installing RSpec into application."; fi
-./$APPNAME/rails g rspec:install
+rails g rspec:install
 
 if [[ $VERBOSE -eq 1 ]]; then echo "Fixing .rspec file."; fi
-cat << EOF > ./$APPNAME/.rspec
+cat << EOF > .rspec
 --color -fd
 --require rails_helper
 EOF
 
+if [[ $VERBOSE -eq 1 ]]; then echo "Adding directories for RSpec tests."; fi
+mkdir spec/controllers spec/models spec/factories spec/helpers
+
 if [[ $VERBOSE -eq 1 ]]; then echo "Creating binstub for RSpec."; fi
-./$APPNAME/bundle binstubs rspec-core
+bundle binstubs rspec-core
+
+if [[ $VERBOSE -eq 1 ]]; then echo "Adding Guardfile entry for RSpec."; fi
+bundle exec guard init rspec
 }
 
 
@@ -162,15 +168,15 @@ if [[ $VERBOSE -eq 1 ]]; then echo "Creating binstub for RSpec."; fi
 cucumberSetup()
 {
 if [[ $VERBOSE -eq 1 ]]; then echo "Installing Cucumber into application."; fi
-./$APPNAME/rails g cucumber:install
+rails g cucumber:install
 
 if [[ $VERBOSE -eq 1 ]]; then echo "Creating binstub for Cucumber."; fi
-./$APPNAME/bundle binstubs cucumber
+bundle binstubs cucumber
 
 if [[ $RSPEC -eq 1 ]] 
 then
 if [[ $VERBOSE -eq 1 ]]; then echo "Making FactoryGirl factories accessible."; fi
-cat << EOF > ./$APPNAME/features/support/env.rb
+cat << EOF > features/support/env.rb
 
 # Make FactoryGirl factories accessible to Cucumber scenarios
 Dir["../../spec/factories/*.rb"].each {|file| require_relative file }
@@ -178,8 +184,7 @@ EOF
 fi
 
 if [[ $VERBOSE -eq 1 ]]; then echo "Configuring DatabaseCleaner."; fi
-cat << EOF > ./$APPNAME/features/support/database.rb
-
+cat << EOF >> features/support/database.rb
 # Hook for DatabaseCleaner
 Before do
   DatabaseCleaner.start
@@ -189,6 +194,9 @@ After do
   DatabaseCleaner.clean
 end
 EOF
+
+if [[ $VERBOSE -eq 1 ]]; then echo "Adding Guardfile entry for Cucumber."; fi
+bundle exec guard init cucumber
 }
 
 
@@ -196,6 +204,26 @@ EOF
 # Set up jasmine in application
 jasmineSetup()
 {
+if [[ $VERBOSE -eq 1 ]]; then echo "Installing Jasmine into application."; fi
+rails g jasmine_rails:install
+
+if [[ $VERBOSE -eq 1 ]]; then echo "Creating Jasmine Helpers Directory."; fi
+mkdir spec/javascripts/helpers
+
+if [[ $VERBOSE -eq 1 ]]; then echo "Downloading jasmine-jquery."; fi
+cd spec/javascripts/helpers
+wget https://raw.github.com/velesin/jasmine-jquery/master/lib/jasmine-jquery.js
+
+if [[ $VERBOSE -eq 1 ]]; then echo "Downloading jasmine-fixture."; fi
+wget https://github.com/searls/jasmine-fixture/releases/download/1.2.0/jasmine-fixture.js
+cd ../../..
+
+if [[ $VERBOSE -eq 1 ]]; then echo "Adding Guardfile entry for Jasmine."; fi
+bundle exec guard init jasmine
+
+if [[ $VERBOSE -eq 1 ]]; then echo "Fixing Guardfile entry for Jasmine."; fi
+NEWGUARD="\'jasmine\'\, :server => $WEBSERVER, :server_mount => \'\/specs\'"
+sed -i.bak "s/:jasmine/$NEWGUARD/" Guardfile
 }
 
 
@@ -203,6 +231,7 @@ jasmineSetup()
 # Set up SimpleCov
 simplecovSetup()
 {
+  echo "SimpleCov"
 }
 
 
@@ -214,6 +243,8 @@ HAML=0
 RSPEC=0
 CUCUMBER=0
 JASMINE=0
+
+WEBSERVER=':webrick'
 
 
 
@@ -281,6 +312,7 @@ then
 fi
 if [[ $VERBOSE -eq 1 ]]; then echo "Creating new rails application."; fi
 $CREATECOMMAND
+cd ./$APPNAME
 
 
 
@@ -302,7 +334,7 @@ if [[ $RSPEC -eq 1 || $CUCUMBER -eq 1 ]]
 then
   addTestingGemsTestGroup
 fi
-bundle
+bundle install
 
 
 
@@ -335,6 +367,7 @@ if [[ $RSPEC -eq 1 || $CUCUMBER -eq 1 ]]
 then
   simplecovSetup
 fi
+
 
 
 # Exit
