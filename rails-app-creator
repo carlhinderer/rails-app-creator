@@ -5,6 +5,7 @@
 #   configurations that can be passed in as command-line flags.
 
 
+
 # Prints help information
 usage()
 {
@@ -14,6 +15,7 @@ Here are usage instructions
 -h -v --haml --rspec --cucumber --jasmine
 EOF
 }
+
 
 
 # Adds Haml gems to Gemfile
@@ -29,6 +31,7 @@ EOF
 }
 
 
+
 # Replaces ERB layout with Haml layout
 replaceErbLayout()
 {
@@ -38,7 +41,7 @@ rm ./$APPNAME/app/views/layouts/application.html.erb
 
 # Create Haml layout file
 if [[ $VERBOSE -eq 1 ]]; then echo "Creating Haml layout file."; fi
-cat <<- EOF >> ./$APPNAME/app/views/layouts/application.html.haml
+cat << EOF >> ./$APPNAME/app/views/layouts/application.html.haml
 !!! 5
 
 %html
@@ -54,6 +57,89 @@ EOF
 }
 
 
+
+# Add gems for rspec, cucumber, and jasmine to test/development group
+addTestingGemsDevTestGroup()
+{
+if [[ $VERBOSE -eq 1 ]]
+then echo "Adding testing gems to :development, :test group."
+fi
+
+# Begin Development/Test Group
+cat << EOF >> ./$APPNAME/Gemfile
+
+# Testing Gems
+group :development, :test do
+EOF
+
+# RSpec Development/Test Group
+if [[ $RSPEC -eq 1 ]]
+then
+cat << EOF >> ./$APPNAME/Gemfile
+  gem 'rspec-rails'
+  gem 'factory_girl_rails'
+  gem 'faker'
+EOF
+fi
+
+# Jasmine Development/Test Group
+if [[ $JASMINE -eq 1 ]] 
+then
+cat << EOF >> ./$APPNAME/Gemfile
+  gem 'jasmine-rails'
+  gem 'jasmine-jquery-rails'
+  gem 'guard-jasmine'
+EOF
+fi
+
+# End Development/Test Group
+echo "end" >> ./$APPNAME/Gemfile
+}
+
+
+
+# Add gems for rspec, cucumber, and jasmine to test group
+addTestingGemsTestGroup()
+{
+if [[ $VERBOSE -eq 1 ]]
+then echo "Adding testing gems to :test group."
+fi
+
+# Begin Test Group
+cat << EOF >> ./$APPNAME/Gemfile
+
+# Testing Gems
+group :test do
+EOF
+
+# RSpec Test Group
+if [[ $RSPEC -eq 1 ]]
+then
+cat << EOF >> ./$APPNAME/Gemfile
+  gem 'shoulda-matchers'
+  gem 'guard-rspec', :require => false
+  gem 'simplecov', :require => false
+EOF
+fi
+
+# Cucumber Test Group
+if [[ $CUCUMBER -eq 1 ]] 
+then
+cat << EOF >> ./$APPNAME/Gemfile
+  gem 'cucumber-rails', require: false
+  gem 'selenium-webdriver'
+  gem 'database_cleaner'
+  gem 'launchy'
+  gem 'guard-cucumber'
+EOF
+fi
+
+# End Test Group
+echo "end" >> ./$APPNAME/Gemfile
+}
+
+
+
 # Variables
 APPNAME=""
 VERBOSE=0
@@ -61,6 +147,7 @@ HAML=0
 RSPEC=0
 CUCUMBER=0
 JASMINE=0
+
 
 
 # Parse command parameters
@@ -107,6 +194,7 @@ do
 done
 
 
+
 # Check that an application name was provided
 if [[ -z $APPNAME ]]
 then
@@ -114,6 +202,7 @@ then
   usage
   exit -1
 fi
+
 
 
 # Create new rails application
@@ -127,12 +216,27 @@ if [[ $VERBOSE -eq 1 ]]; then echo "Creating new rails application."; fi
 $CREATECOMMAND
 
 
+
 # Add HAML support, if HAML option is set
 if [[ $HAML -eq 1 ]]
 then
   addHamlGems
   replaceErbLayout
 fi
+
+
+
+# Add Gems for RSpec, Cucumber, and Jasmine if options are set
+if [[ $RSPEC -eq 1 || $JASMINE -eq 1 ]]
+then
+  addTestingGemsDevTestGroup
+fi
+if [[ $RSPEC -eq 1 || $CUCUMBER -eq 1 ]]
+then
+  addTestingGemsTestGroup
+fi
+bundle
+
 
 
 # Exit
