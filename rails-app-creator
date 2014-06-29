@@ -132,6 +132,8 @@ cat << EOF >> Gemfile
   gem 'launchy'
   gem 'guard-cucumber'
 EOF
+# Add SimpleCov if RSpec didn't already add it
+if [[ $RSPEC -ne 1 ]]; then "  gem 'simplecov', :require => false" >> Gemfile; fi
 fi
 
 # End Test Group
@@ -222,7 +224,7 @@ if [[ $VERBOSE -eq 1 ]]; then echo "Adding Guardfile entry for Jasmine."; fi
 bundle exec guard init jasmine
 
 if [[ $VERBOSE -eq 1 ]]; then echo "Fixing Guardfile entry for Jasmine."; fi
-NEWGUARD="\'jasmine\'\, :server => $WEBSERVER, :server_mount => \'\/specs\'"
+NEWGUARD="\'jasmine\'\, :server => $APPSERVER, :server_mount => \'\/specs\'"
 sed -i.bak "s/:jasmine/$NEWGUARD/" Guardfile
 }
 
@@ -231,7 +233,20 @@ sed -i.bak "s/:jasmine/$NEWGUARD/" Guardfile
 # Set up SimpleCov
 simplecovSetup()
 {
-  echo "SimpleCov"
+if [[ $VERBOSE -eq 1 ]]; then echo "Adding .simplecov file."; fi
+echo 'SimpleCov.start' > .simplecov
+
+if [[ $RSPEC -eq 1 ]]
+then
+if [[ $VERBOSE -eq 1 ]]; then echo "Adding simplecov to RSpec."; fi
+sed -i "1s/^/require \'simplecov\'\n\n/" spec/rails_helper.rb
+fi
+
+if [[ $CUCUMBER -eq 1 ]]
+then
+if [[ $VERBOSE -eq 1 ]]; then echo "Adding simplecov to Cucumber."; fi
+sed -i "1s/^/require \'simplecov\'\n\n/" features/support/env.rb
+fi
 }
 
 
@@ -244,7 +259,7 @@ RSPEC=0
 CUCUMBER=0
 JASMINE=0
 
-WEBSERVER=':webrick'
+APPSERVER=':webrick'
 
 
 
