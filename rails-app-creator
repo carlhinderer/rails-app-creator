@@ -1,0 +1,79 @@
+#!/bin/bash
+# rails-app-creator
+
+# This script creates new rails applications with a variety of common 
+#   configurations that can be passed in as command-line flags.
+
+# Usage
+usage()
+{
+cat << EOF
+Here are usage instructions
+--name Appname
+-h -v --haml --rspec --cucumber --jasmine
+EOF
+}
+
+# Variables
+APPNAME=""
+VERBOSE=0
+HAML=0
+RSPEC=0
+CUCUMBER=0
+JASMINE=0
+
+# Parse command parameters
+while :
+do
+  case $1 in
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    -v | --verbose)
+      VERBOSE=1
+      shift
+      ;;
+    --name)
+      APPNAME=$2
+      shift 2
+      ;;
+    --haml)
+      HAML=1
+      shift
+      ;;
+    --rspec)
+      RSPEC=1
+      shift
+      ;;
+    --cucumber)
+      CUCUMBER=1
+      shift
+      ;;
+    --jasmine)
+      JASMINE=1
+      shift
+      ;;
+    -* | --*)
+      echo "Unknown option encountered: $1"
+      usage
+      exit -1
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+# Check that an application name was provided
+if [[ -z $APPNAME ]]
+then
+  echo "A name for the new application must be provided."
+  usage
+  exit -1
+fi
+
+
+
+# End
+exit 0
