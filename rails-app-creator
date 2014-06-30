@@ -10,9 +10,33 @@
 usage()
 {
 cat << EOF
-Here are usage instructions
---name Appname
--h -v --haml --rspec --cucumber --jasmine
+rails-app-creator --name myRailsApp
+
+Creates a new rails application with commonly used functionality included.
+
+Available options:
+
+--name appName
+  Specifies name for new Rails application
+
+--help or -h
+  Prints command information and options
+
+--verbose or -v
+  Prints each step in setup
+
+--haml
+  Adds haml to application
+
+--rspec
+  Adds rspec to application
+
+--cucumber
+  Adds cucumber to application
+
+--jasmine
+  Adds jasmine to application
+
 EOF
 }
 
