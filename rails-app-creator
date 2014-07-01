@@ -179,7 +179,7 @@ cat << EOF > .rspec
 EOF
 
 if [[ $VERBOSE -eq 1 ]]; then echo "Adding directories for RSpec tests."; fi
-mkdir spec/controllers spec/models spec/factories spec/helpers
+mkdir spec/controllers spec/models spec/factories spec/helpers spec/views spec/requests spec/routes
 
 if [[ $VERBOSE -eq 1 ]]; then echo "Creating binstub for RSpec."; fi
 bundle binstubs rspec-core
