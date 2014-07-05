@@ -37,6 +37,8 @@ Available options:
 --jasmine
   Adds jasmine to application
 
+--unicorn
+  Adds unicorn as default app server in development, test, and production
 EOF
 }
 
@@ -254,7 +256,7 @@ sed -i.bak "s/:jasmine/$NEWGUARD/" Guardfile
 
 
 
-# Set up SimpleCov
+# Set up SimpleCov in application
 simplecovSetup()
 {
 if [[ $VERBOSE -eq 1 ]]; then echo "Adding .simplecov file."; fi
@@ -275,6 +277,33 @@ fi
 
 
 
+# Set up Unicorn as development, test, and production app server
+unicornSetup()
+{
+if [[ $VERBOSE -eq 1 ]]; then echo "Creating Procfile."; fi
+cat << EOF > Procfile
+web: bundle exec unicorn -p $PORT -c ./config/unicorn.rb
+EOF
+
+if [[ $VERBOSE -eq 1 ]]; then echo "Creating Procfile.dev."; fi
+cat << EOF > Procfile.dev
+web: bundle exec unicorn -p $PORT -c ./config/unicorn.rb --no-default-middleware
+EOF
+
+if [[ $VERBOSE -eq 1 ]]; then echo "Creating unicorn.rb configuration file."; fi
+cat << EOF > config/unicorn.rb
+if ENV["RAILS_ENV"] == "development"
+  worker_processes 1
+else
+  worker_processes Integer(ENV["WEB_CONCURRENCY"] || 3)
+end
+
+timeout 15
+EOF
+}
+
+
+
 # Variables
 APPNAME=""
 VERBOSE=0
@@ -282,6 +311,7 @@ HAML=0
 RSPEC=0
 CUCUMBER=0
 JASMINE=0
+UNICORN=0
 
 APPSERVER=':webrick'
 
@@ -319,6 +349,10 @@ do
       JASMINE=1
       shift
       ;;
+    --unicorn)
+      UNICORN=1
+      shift
+      ;;
     -* | --*)
       echo "Unknown option encountered: $1"
       usage
@@ -331,7 +365,6 @@ do
 done
 
 
-
 # Check that an application name was provided
 if [[ -z $APPNAME ]]
 then
@@ -339,7 +372,6 @@ then
   usage
   exit -1
 fi
-
 
 
 # Create new rails application
@@ -354,14 +386,12 @@ $CREATECOMMAND
 cd ./$APPNAME
 
 
-
 # Add HAML support, if HAML option is set
 if [[ $HAML -eq 1 ]]
 then
   addHamlGems
   replaceErbLayout
 fi
-
 
 
 # Add Gems for RSpec, Cucumber, and Jasmine if options are set
@@ -376,13 +406,11 @@ fi
 bundle install
 
 
-
 # Add RSpec setup
 if [[ $RSPEC -eq 1 ]]
 then
   rspecSetup
 fi
-
 
 
 # Add Cucumber setup
@@ -392,13 +420,11 @@ then
 fi
 
 
-
 # Add jasmine setup
 if [[ $JASMINE -eq 1 ]]
 then
   jasmineSetup
 fi
-
 
 
 # Add simplecov setup
@@ -408,6 +434,11 @@ then
 fi
 
 
+# Add unicorn setup
+if [[ $UNICORN -eq 1 ]]
+then
+  unicornSetup
+fi
 
 # Exit
 exit 0
