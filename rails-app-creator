@@ -252,6 +252,7 @@ bundle exec guard init jasmine
 if [[ $VERBOSE -eq 1 ]]; then echo "Fixing Guardfile entry for Jasmine."; fi
 NEWGUARD="\'jasmine\'\, :server => $APPSERVER, :server_mount => \'\/specs\'"
 sed -i.bak "s/:jasmine/$NEWGUARD/" Guardfile
+rm Guardfile.bak
 }
 
 
@@ -280,6 +281,14 @@ fi
 # Set up Unicorn as development, test, and production app server
 unicornSetup()
 {
+if [[ $VERBOSE -eq 1 ]]; then echo "Adding Unicorn to Gemfile."; fi
+cat << EOF >> Gemfile
+
+# Use unicorn as application server
+gem 'unicorn'
+EOF
+bundle install
+  
 if [[ $VERBOSE -eq 1 ]]; then echo "Creating Procfile."; fi
 cat << EOF > Procfile
 web: bundle exec unicorn -p $PORT -c ./config/unicorn.rb
@@ -299,6 +308,18 @@ else
 end
 
 timeout 15
+EOF
+
+if [[ $VERBOSE -eq 1 ]]; then echo "Adding logging from Unicorn to stdout."; fi
+sed -i '$ d' config/environments/development.rb
+cat << EOF >> config/environments/development.rb
+
+  # Send Unicorn logging to STDOUT.
+  config.logger = Logger.new(STDOUT)
+  config.logger.level = Logger.const_get(
+    ENV['LOG_LEVEL'] ? ENV['LOG_LEVEL'].upcase : 'DEBUG'
+  )
+end
 EOF
 }
 
