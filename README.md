@@ -15,10 +15,12 @@ Options include:
 - `-v or --verbose`
   - Verbose mode.
 - `--haml`
-  - Adds [haml]() and [haml-rails]() gems.  Also replaces default application layout file with a haml version.
+  - Adds [haml](https://github.com/haml/haml) and [haml-rails](https://github.com/indirect/haml-rails) gems.  Also replaces default application layout file with a haml version.
 - `--rspec`
-  - Adds the [rspec-rails](),[factory_girl_rails](), [faker](), [shoulda-matchers](), [guard-rspec](), and [simplecov]() gems.  Installs RSpec into application.  Alters .rspec file to provide pretty output and require correct config file.  Adds common directories for RSpec tests.  Creates a binstub for RSpec.  Adds RSpec entry to Guardfile.  Adds RSpec to simplecov reports.
+  - Adds the [rspec-rails](https://github.com/rspec/rspec-rails),[factory_girl_rails](https://github.com/thoughtbot/factory_girl_rails), [faker](https://github.com/stympy/faker), [shoulda-matchers](https://github.com/thoughtbot/shoulda-matchers), [guard-rspec](https://github.com/guard/guard-rspec), and [simplecov](https://github.com/colszowka/simplecov) gems.  Installs RSpec into application.  Alters .rspec file to provide pretty output and require correct config file.  Adds common directories for RSpec tests.  Creates a binstub for RSpec.  Adds RSpec entry to Guardfile.  Adds RSpec to simplecov reports.
 - `--cucumber`
-  - Adds the [cucumber-rails](), [selenium-webdriver](), [database_cleaner](), [launchy](), and [guard-cucumber]() gems.  Installs Cucumber into application.  Creates binstub for Cucumber. Configures the DatabaseCleaner.  Adds Cucumber entry to Guardfile.  Adds Cucumber to simplecov reports. 
+  - Adds the [cucumber-rails](https://github.com/cucumber/cucumber-rails), [selenium-webdriver](https://github.com/vertis/selenium-webdriver), [database_cleaner](https://github.com/DatabaseCleaner/database_cleaner), [launchy](https://github.com/copiousfreetime/launchy), and [guard-cucumber](https://github.com/guard/guard-cucumber) gems.  Installs Cucumber into application.  Creates binstub for Cucumber. Configures the DatabaseCleaner.  Adds Cucumber entry to Guardfile.  Adds Cucumber to simplecov reports. 
 - `--jasmine`
-  - Adds the [jasmine-rails](), [jasmine-jquery-rails](), and [guard-jasmine]() gems.  Downloads the files required for [jasmine-jquery-rails]() and [jasmine-fixtures]().  Adds Jasmine to Guardfile and configures guard to run specs using jasmine-rails path.
+  - Adds the [jasmine-rails](https://github.com/searls/jasmine-rails), [jasmine-jquery-rails](https://github.com/travisjeffery/jasmine-jquery-rails), and [guard-jasmine](https://github.com/guard/guard-jasmine) gems.  Downloads the files required for [jasmine-jquery-rails](https://github.com/travisjeffery/jasmine-jquery-rails/tree/master/vendor/assets/javascripts) and [jasmine-fixtures](https://github.com/searls/jasmine-fixture).  Adds Jasmine to Guardfile and configures guard to run specs using jasmine-rails path.
+- `--unicorn`
+  - Adds the [unicorn](https://github.com/defunkt/unicorn) gem.  Creates *Procfile* and *Procfile.dev* files.  Creates *unicorn.rb* configuration files.  Redirects unicorn logging to stdout.
