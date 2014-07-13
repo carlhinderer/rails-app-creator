@@ -39,6 +39,9 @@ Available options:
 
 --unicorn
   Adds unicorn as default app server in development, test, and production
+
+--bootstrap
+  Adds bootstrap to application
 EOF
 }
 
@@ -324,6 +327,36 @@ EOF
 }
 
 
+# Add bootstrap to application
+bootstrapSetup()
+{
+if [[ $VERBOSE -eq 1 ]]; then echo "Adding bootstrap gems to Gemfile."; fi
+cat << EOF >> Gemfile
+  
+# Use bootstrap for styles
+gem 'bootstrap-sass'
+gem 'autoprefixer-rails'
+EOF
+
+bundle install
+
+if [[ $VERBOSE -eq 1 ]]; then echo "Replacing application.css with application.css.scss."; fi
+rm app/assets/stylesheets/application.css
+cat << EOF > app/assets/stylesheets/application.css.scss
+@import "bootstrap-custom";
+@import "bootstrap";
+
+@import "*";
+@import "**/*";
+EOF
+
+if [[ $VERBOSE -eq 1 ]]; then echo "Adding bootstrap to application.js."; fi
+sed -i '/jquery_ujs/a //= require bootstrap' app/assets/javascripts/application.js
+
+if [[ $VERBOSE -eq 1 ]]; then echo "Adding file for custom bootstrap overrides."; fi
+touch app/assets/stylesheets/bootstrap-custom.css.scss
+}
+
 
 # Variables
 APPNAME=""
@@ -333,6 +366,7 @@ RSPEC=0
 CUCUMBER=0
 JASMINE=0
 UNICORN=0
+BOOTSTRAP=0
 
 APPSERVER=':webrick'
 
@@ -372,6 +406,10 @@ do
       ;;
     --unicorn)
       UNICORN=1
+      shift
+      ;;
+    --bootstrap)
+      BOOTSTRAP=1
       shift
       ;;
     -* | --*)
@@ -459,6 +497,13 @@ fi
 if [[ $UNICORN -eq 1 ]]
 then
   unicornSetup
+fi
+
+
+# Add bootstrap setup
+if [[ $BOOTSTRAP -eq 1 ]]
+then
+  bootstrapSetup
 fi
 
 # Exit
