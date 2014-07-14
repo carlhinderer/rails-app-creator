@@ -24,3 +24,5 @@ Options include:
   - Adds the [jasmine-rails](https://github.com/searls/jasmine-rails), [jasmine-jquery-rails](https://github.com/travisjeffery/jasmine-jquery-rails), and [guard-jasmine](https://github.com/guard/guard-jasmine) gems.  Downloads the files required for [jasmine-jquery-rails](https://github.com/travisjeffery/jasmine-jquery-rails/tree/master/vendor/assets/javascripts) and [jasmine-fixtures](https://github.com/searls/jasmine-fixture).  Adds Jasmine to Guardfile and configures guard to run specs using jasmine-rails path.
 - `--unicorn`
   - Adds the [unicorn](https://github.com/defunkt/unicorn) gem.  Creates *Procfile* and *Procfile.dev* files.  Creates *unicorn.rb* configuration files.  Redirects unicorn logging to stdout.
+- `--bootstrap`
+  - Adds the [bootstrap-sass](https://github.com/anjlab/bootstrap-rails) and [autoprefixer-rails](https://github.com/ai/autoprefixer-rails) gems.  Replaces *application.css* file  with *application.css.scss* file and adds bootstrap to it.  Adds *bootstrap-custom.css.scss* file for overrides to bootstrap default styles.  Adds bootstrap to *application.js* file.
