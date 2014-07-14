@@ -294,12 +294,12 @@ bundle install
   
 if [[ $VERBOSE -eq 1 ]]; then echo "Creating Procfile."; fi
 cat << EOF > Procfile
-web: bundle exec unicorn -p $PORT -c ./config/unicorn.rb
+web: bundle exec unicorn -p \$PORT -c ./config/unicorn.rb
 EOF
 
 if [[ $VERBOSE -eq 1 ]]; then echo "Creating Procfile.dev."; fi
 cat << EOF > Procfile.dev
-web: bundle exec unicorn -p $PORT -c ./config/unicorn.rb --no-default-middleware
+web: bundle exec unicorn -p \$PORT -c ./config/unicorn.rb --no-default-middleware
 EOF
 
 if [[ $VERBOSE -eq 1 ]]; then echo "Creating unicorn.rb configuration file."; fi
