@@ -358,6 +358,24 @@ touch app/assets/stylesheets/bootstrap-custom.css.scss
 }
 
 
+# Add Jquery Validate Plugin
+jqueryValidateSetup() 
+{
+if [[ $VERBOSE -eq 1 ]]; then echo "Adding jquery-validation-rails gem to Gemfile."; fi
+cat << EOF >> Gemfile
+  
+# Use jquery Validate plugin for client-side validation
+gem 'jquery-validation-rails'
+EOF
+
+bundle install
+
+if [[ $VERBOSE -eq 1 ]]; then echo "Adding jquery validate to application.js."; fi
+sed -i '/jquery_ujs/a //= require jquery.validate' app/assets/javascripts/application.js
+sed -i '/jquery.validate/a //= require jquery.validate.additional-methods' app/assets/javascripts/application.js
+}
+
+
 # Variables
 APPNAME=""
 VERBOSE=0
@@ -367,6 +385,7 @@ CUCUMBER=0
 JASMINE=0
 UNICORN=0
 BOOTSTRAP=0
+JQUERY_VALIDATE=0
 
 APPSERVER=':webrick'
 
@@ -410,6 +429,10 @@ do
       ;;
     --bootstrap)
       BOOTSTRAP=1
+      shift
+      ;;
+    --jqueryvalidate)
+      JQUERY_VALIDATE=1
       shift
       ;;
     -* | --*)
@@ -504,6 +527,13 @@ fi
 if [[ $BOOTSTRAP -eq 1 ]]
 then
   bootstrapSetup
+fi
+
+
+# Add jquery validate plugin
+if [[ $JQUERY_VALIDATE -eq 1 ]]
+then
+  jqueryValidateSetup
 fi
 
 # Exit
