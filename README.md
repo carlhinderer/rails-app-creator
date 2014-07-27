@@ -26,5 +26,5 @@ Options include:
   - Adds the [unicorn](https://github.com/defunkt/unicorn) gem.  Creates *Procfile* and *Procfile.dev* files.  Creates *unicorn.rb* configuration files.  Redirects unicorn logging to stdout.
 - `--bootstrap`
   - Adds the [bootstrap-sass](https://github.com/anjlab/bootstrap-rails) and [autoprefixer-rails](https://github.com/ai/autoprefixer-rails) gems.  Replaces *application.css* file  with *application.css.scss* file and adds bootstrap to it.  Adds *bootstrap-custom.css.scss* file for overrides to bootstrap default styles.  Adds bootstrap to *application.js* file.
-- '--jqueryvalidate'
+- `--jqueryvalidate`
   - Adds the [jquery-validation-rails](https://github.com/danryan/jquery-validation-rails) gem.  Adds *jquery.validate* and *jquery.validate.additional-methods* to the *application.js* file.  
